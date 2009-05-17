@@ -1,6 +1,9 @@
 <ui version="4.0" >
- <class>instructionsForm</class>
- <widget class="QWidget" name="instructionsForm" >
+ <class>InstructionsDialog</class>
+ <widget class="QWidget" name="InstructionsDialog" >
+  <property name="windowModality" >
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -28,6 +31,11 @@
    </item>
    <item>
     <widget class="QLabel" name="instructions" >
+     <property name="font" >
+      <font>
+       <pointsize>22</pointsize>
+      </font>
+     </property>
      <property name="text" >
       <string>TextLabel</string>
      </property>
