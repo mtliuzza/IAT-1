@@ -1,12 +1,20 @@
-#include "src/Item.h"
+#include "Controller.h"
 
-#include <QApplication>
-
+#include <QtCore>
+#include <QtGui>
 
 int main( int argc, char ** argv ) {
   QApplication app( argc, argv );
-  Item item;
-  item.show();
+
+  Controller controller;
+
+  if ( ! controller.init() ) {
+    qDebug() << "Couldn't init test.";
+    return 0;
+  }
+
+  controller.start();
+
   return app.exec();
 }
 
