@@ -9,12 +9,26 @@ Controller::Controller() {
   this->correctOverall = 0;
   this->wrongOverall = 0;
   this->round = 0;
+  this->currentItem = new Item();
+  this->currentInstructions = new Instructions();
+
+  connect(
+    this->currentItem, SIGNAL( answered( bool, int ) ),
+    this, SLOT( getAnswer( bool, int ) )
+  );
+  connect(
+    this->currentInstructions, SIGNAL( read() ),
+    this, SLOT( instructionsRead() )
+  );
+
   sranddev();
   this->versionA = rand() % 2;
 }
 
 Controller::~Controller() {
   delete this->logStream;
+  this->currentItem->deleteLater();
+  this->currentInstructions->deleteLater();
 }
 
 bool Controller::init() {
@@ -155,10 +169,6 @@ void Controller::getAnswer( bool left, int msecs ) {
     }
   }
 
-
-  this->currentItem->hide();
-  this->currentItem->deleteLater();
-
   if ( --this->wordsLeft > 0 ) {
     this->prepareNewWord();
   }
@@ -168,23 +178,15 @@ void Controller::getAnswer( bool left, int msecs ) {
 }
 
 void Controller::instructionsRead() {
-  this->currentInstructions->hide();
-  this->currentInstructions->deleteLater();
   this->prepareNewWord();
+  this->currentItem->showFullScreen();
+  this->currentInstructions->hide();
 }
 
 void Controller::prepareNewWord() {
-  this->currentItem = new Item();
   this->currentItem->init(
     this->l1n, this->l2n, this->r1n, this->r2n, this->getRandomWord()
   );
-
-  connect(
-    this->currentItem, SIGNAL( answered( bool, int ) ),
-    this, SLOT( getAnswer( bool, int ) )
-  );
-
-  this->currentItem->showFullScreen();
 }
 
 void Controller::prepareNewRound() {
@@ -323,14 +325,9 @@ void Controller::prepareNewRound() {
       return;
   }
 
-  this->currentInstructions = new Instructions();
-
-  connect(
-    this->currentInstructions, SIGNAL( read() ),
-    this, SLOT( instructionsRead() )
-  );
   this->currentInstructions->setText( instructions );
   this->currentInstructions->showFullScreen();
+  this->currentItem->hide();
 
   ++this->round;
   this->wordsLeft = WORDS_PER_ROUND;

@@ -1,13 +1,7 @@
 #include "Item.h"
 
-#include <QString>
-
 Item::Item() {
   setupUi( this );
-}
-
-Item::~Item() {
-
 }
 
 void Item::init(
@@ -17,12 +11,14 @@ void Item::init(
   QString rightCategory2,
   QString word
 ) {
+  this->acceptAnswer = false;
   this->leftCategory1->setText( leftCategory1 );
   this->leftCategory2->setText( leftCategory2 );
   this->rightCategory1->setText( rightCategory1 );
   this->rightCategory2->setText( rightCategory2 );
+  this->word->hide();
   this->word->setText( word );
-  this->timer.start();
+  QTimer::singleShot( MSECS_BEFORE_DISPLAYING_WORD, this, SLOT( showWord() ) );
 }
 
 int Item::getTime() {
@@ -40,6 +36,11 @@ int Item::getTime() {
 }
 
 void Item::keyPressEvent( QKeyEvent* event ) {
+  if ( ! this->acceptAnswer ) {
+    event->ignore();
+    return;
+  }
+
   if ( event->key() == Qt::Key_F ) {
     event->accept();
     this->word->setText( "f" );
@@ -52,6 +53,13 @@ void Item::keyPressEvent( QKeyEvent* event ) {
     emit answered( false, this->getTime() );
     return;
   }
+
   event->ignore();
+}
+
+void Item::showWord() {
+  this->word->show();
+  this->timer.start();
+  this->acceptAnswer = true;
 }
 
