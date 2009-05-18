@@ -10,6 +10,10 @@ QMAKE_CXXFLAGS_DEBUG   += -ggdb -O0
 CONFIG += debug
 CONFIG += warn_on
 
+macx {
+  CONFIG -= app_bundle
+}
+
 
 FORMS += src/dialogs/ItemDialog.ui
 FORMS += src/dialogs/InstructionsDialog.ui
