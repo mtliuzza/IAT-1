@@ -17,22 +17,22 @@ Controller::~Controller() {
 
 bool Controller::init() {
   if ( ! this->readFile(
-    "leftCategory1.txt", this->leftCategory1Name, this->leftCategory1Words
+    "left1.txt", this->leftCategory1Name, this->leftCategory1Words
   ) ) {
     return false;
   }
   if ( ! this->readFile(
-    "leftCategory2.txt", this->leftCategory2Name, this->leftCategory2Words
+    "left2.txt", this->leftCategory2Name, this->leftCategory2Words
   ) ) {
     return false;
   }
   if ( ! this->readFile(
-    "rightCategory1.txt", this->rightCategory1Name, this->rightCategory1Words
+    "right1.txt", this->rightCategory1Name, this->rightCategory1Words
   ) ) {
     return false;
   }
   if ( ! this->readFile(
-    "rightCategory2.txt", this->rightCategory2Name, this->rightCategory2Words
+    "right2.txt", this->rightCategory2Name, this->rightCategory2Words
   ) ) {
     return false;
   }
