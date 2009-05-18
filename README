@@ -1,0 +1,24 @@
+IAT - Implicit Association Test
+
+Description:
+  Implementation of IAT in qt. Compatible with OS X, Windows, Linux.
+
+Author/Contact:
+  Adam Wróbel
+  xellos ( at xellos info )
+
+Licence:
+  LGPL. See LICENSE file.
+
+What you can do to enhance this application:
+  * This version does not use translation files and comes with Polish UI.
+    Literal strings in source could be replaced with English equivalents and
+    qt translation files could be added.
+
+  * Better configuration. Number of words to display, time to wait before
+    displaying word, etc..
+
+  * Database usage.
+
+  * Interface to view and aggregate results.
+
