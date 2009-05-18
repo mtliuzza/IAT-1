@@ -1,12 +1,13 @@
 #include "Controller.h"
 #include "Item.h"
+#include "Instructions.h"
 
 #include <QtCore>
 #include <stdlib.h>
 
 Controller::Controller() {
-  this->correctAnswers = 0;
-  this->wrongAnswers = 0;
+  this->correctOverall = 0;
+  this->wrongOverall = 0;
   this->round = 0;
   sranddev();
 }
@@ -55,7 +56,11 @@ bool Controller::init() {
   fileName.append( ".txt" );
 
   if ( QFile::exists( fileName ) ) {
-    QMessageBox::warning( NULL, "IAT", "Mam już wyniki takiej osoby." );
+    QMessageBox::warning(
+      NULL,
+      "IAT",
+      trUtf8( "Mam już wyniki takiej osoby." )
+    );
     return false;
   }
 
@@ -110,20 +115,38 @@ QString Controller::getRandomWord() {
 }
 
 void Controller::getAnswer( bool left, int msecs ) {
-  results.push_back( msecs );
+  if ( --this->wordsLeftToSkip < 0 ) {
+    results.push_back( msecs );
+    overallResults.push_back( msecs );
 
-  if ( this->showingLeftWord && left ) {
-    ++this->correctAnswers;
-    *this->logStream << "Correct in " << msecs << "\n";
-  }
-  else if ( ! this->showingLeftWord && ! left ) {
-    ++this->correctAnswers;
-    *this->logStream << "Correct in " << msecs << "\n";
+    if ( this->showingLeftWord && left ) {
+      ++this->correctAnswers;
+      ++this->correctOverall;
+      *this->logStream << trUtf8( "Poprawna po " ) << msecs << "\n";
+    }
+    else if ( ! this->showingLeftWord && ! left ) {
+      ++this->correctAnswers;
+      ++this->correctOverall;
+      *this->logStream << trUtf8( "Poprawna po " ) << msecs << "\n";
+    }
+    else {
+      ++this->wrongAnswers;
+      ++this->wrongOverall;
+      *this->logStream << trUtf8( "Błędna po " ) << msecs << "\n";
+    }
   }
   else {
-    ++this->wrongAnswers;
-    *this->logStream << "Wrong in " << msecs << "\n";
+    if ( this->showingLeftWord && left ) {
+      *this->logStream << trUtf8( "Pominięta poprawna po " ) << msecs << "\n";
+    }
+    else if ( ! this->showingLeftWord && ! left ) {
+      *this->logStream << trUtf8( "Pominięta poprawna po " ) << msecs << "\n";
+    }
+    else {
+      *this->logStream << trUtf8( "Pominięta błędna po " ) << msecs << "\n";
+    }
   }
+
 
   this->currentItem->hide();
   this->currentItem->deleteLater();
@@ -134,6 +157,12 @@ void Controller::getAnswer( bool left, int msecs ) {
   else {
     this->prepareNewRound();
   }
+}
+
+void Controller::instructionsRead() {
+  this->currentInstructions->hide();
+  this->currentInstructions->deleteLater();
+  this->prepareNewWord();
 }
 
 void Controller::prepareNewWord() {
@@ -147,10 +176,17 @@ void Controller::prepareNewWord() {
     this, SLOT( getAnswer( bool, int ) )
   );
 
-  this->currentItem->show();
+  this->currentItem->showFullScreen();
 }
 
 void Controller::prepareNewRound() {
+  this->writeRoundResults();
+  this->results.clear();
+  this->correctAnswers = 0;
+  this->wrongAnswers = 0;
+
+  QString instructions;
+
   switch ( this->round ) {
     case 0:
       this->l1w = &this->leftCategory1Words;
@@ -161,8 +197,36 @@ void Controller::prepareNewRound() {
       this->l2n = QString();
       this->r1n = this->rightCategory1Name;
       this->r2n = QString();
+      instructions = trUtf8(
+        "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
+        "kategorii "
+      );
+      instructions.append( this->l1n ).append( ".\n\n" );
+      instructions.append( trUtf8(
+        "Naciśnij j, jeżeli należy do kategorii "
+      ) );
+      instructions.append( this->r1n ).append( "." );
       break;
     case 1:
+      this->l1w = &this->leftCategory2Words;
+      this->l2w = &this->leftCategory2Words;
+      this->r1w = &this->rightCategory2Words;
+      this->r2w = &this->rightCategory2Words;
+      this->l1n = this->leftCategory2Name;
+      this->l2n = QString();
+      this->r1n = this->rightCategory2Name;
+      this->r2n = QString();
+      instructions = trUtf8(
+        "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
+        "kategorii "
+      );
+      instructions.append( this->l1n ).append( ".\n\n" );
+      instructions.append( trUtf8(
+        "Naciśnij j, jeżeli należy do kategorii "
+      ) );
+      instructions.append( this->r1n ).append( "." );
+      break;
+    case 2:
       this->l1w = &this->leftCategory1Words;
       this->l2w = &this->leftCategory2Words;
       this->r1w = &this->rightCategory1Words;
@@ -171,20 +235,111 @@ void Controller::prepareNewRound() {
       this->l2n = this->leftCategory2Name;
       this->r1n = this->rightCategory1Name;
       this->r2n = this->rightCategory2Name;
+      instructions = trUtf8(
+        "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
+        "kategorii "
+      );
+      instructions.append( this->l1n ).append( " lub " ).append( this->l2n );
+      instructions.append( trUtf8(
+        ".\n\nNaciśnij j, jeżeli należy do kategorii "
+      ) );
+      instructions.append( this->r1n ).append( " lub " ).append( this->r2n );
+      instructions.append( "." );
+      break;
+    case 3:
+      this->l1w = &this->rightCategory1Words;
+      this->l2w = &this->rightCategory1Words;
+      this->r1w = &this->leftCategory1Words;
+      this->r2w = &this->leftCategory1Words;
+      this->l1n = this->rightCategory1Name;
+      this->l2n = QString();
+      this->r1n = this->leftCategory1Name;
+      this->r2n = QString();
+      instructions = trUtf8(
+        "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
+        "kategorii "
+      );
+      instructions.append( this->l1n ).append( ".\n\n" );
+      instructions.append( trUtf8(
+        "Naciśnij j, jeżeli należy do kategorii "
+      ) );
+      instructions.append( this->r1n ).append( "." );
+      break;
+    case 4:
+      this->l1w = &this->rightCategory1Words;
+      this->l2w = &this->leftCategory2Words;
+      this->r1w = &this->leftCategory1Words;
+      this->r2w = &this->rightCategory2Words;
+      this->l1n = this->rightCategory1Name;
+      this->l2n = this->leftCategory2Name;
+      this->r1n = this->leftCategory1Name;
+      this->r2n = this->rightCategory2Name;
+      instructions = trUtf8(
+        "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
+        "kategorii "
+      );
+      instructions.append( this->l1n ).append( " lub " ).append( this->l2n );
+      instructions.append( trUtf8(
+        ".\n\nNaciśnij j, jeżeli należy do kategorii "
+      ) );
+      instructions.append( this->r1n ).append( " lub " ).append( this->r2n );
+      instructions.append( "." );
       break;
     default:
-      this->writeRoundResults();
+      this->writeOverallResults();
       qApp->quit();
       return;
   }
-  this->writeRoundResults();
+
+  this->currentInstructions = new Instructions();
+
+  connect(
+    this->currentInstructions, SIGNAL( read() ),
+    this, SLOT( instructionsRead() )
+  );
+  this->currentInstructions->setText( instructions );
+  this->currentInstructions->showFullScreen();
 
   ++this->round;
   this->wordsLeft = WORDS_PER_ROUND;
-  this->prepareNewWord();
+  this->wordsLeftToSkip = WORDS_TO_SKIP;
 }
 
 void Controller::writeRoundResults() {
-  
+  if ( this->results.size() < 1 ) {
+    return;
+  }
+
+  int sum = 0;
+  for ( int i = 0; i < this->results.size(); ++i ) {
+    sum += this->results.at( i );
+  }
+  int avg = sum / this->results.size();
+  int prcWrong =
+    100 * this->wrongAnswers /
+    ( this->wrongAnswers + this->correctAnswers );
+
+  *this->logStream << trUtf8( "Średnia rundy to: " ) << avg << "\n";
+  *this->logStream << trUtf8( "Błędnych odpowiedzi: " ) << prcWrong << "%\n\n";
+}
+
+void Controller::writeOverallResults() {
+  if ( this->overallResults.size() < 1 ) {
+    return;
+  }
+
+  int sum = 0;
+  for ( int i = 0; i < this->overallResults.size(); ++i ) {
+    sum += this->overallResults.at( i );
+  }
+  int avg = sum / this->overallResults.size();
+  int prcWrong =
+    100 * this->wrongOverall /
+    ( this->wrongOverall + this->correctOverall );
+
+  *this->logStream << trUtf8( "Średnia ogólna to: " ) << avg << "\n";
+  *this->logStream
+    << trUtf8( "Błędnych odpowiedzi w sumie: " )
+    << prcWrong << "%\n\n";
 }
 

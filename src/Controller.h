@@ -1,9 +1,10 @@
 #include <QtCore>
 
-#define NUMBER_OF_ROUNDS 2
-#define WORDS_PER_ROUND 3
+#define WORDS_PER_ROUND 5
+#define WORDS_TO_SKIP 2
 
 class Item;
+class Instructions;
 
 class Controller : public QObject {
   Q_OBJECT
@@ -22,6 +23,7 @@ class Controller : public QObject {
     void prepareNewWord();
     void prepareNewRound();
     void writeRoundResults();
+    void writeOverallResults();
 
     QString leftCategory1Name;
     QString leftCategory2Name;
@@ -36,16 +38,22 @@ class Controller : public QObject {
     QStringList *l1w, *l2w, *r1w, *r2w;
 
     Item* currentItem;
+    Instructions* currentInstructions;
     int round;
     int wordsLeft;
+    int wordsLeftToSkip;
     bool showingLeftWord;
     int correctAnswers;
     int wrongAnswers;
+    int correctOverall;
+    int wrongOverall;
     QVector<int> results;
+    QVector<int> overallResults;
     QFile logFile;
     QTextStream* logStream;
 
   public slots:
     void getAnswer( bool left, int msecs );
+    void instructionsRead();
 };
 

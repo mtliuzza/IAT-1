@@ -33,7 +33,7 @@
     <widget class="QLabel" name="instructions" >
      <property name="font" >
       <font>
-       <pointsize>22</pointsize>
+       <pointsize>50</pointsize>
       </font>
      </property>
      <property name="text" >

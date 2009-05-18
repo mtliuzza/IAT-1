@@ -15,10 +15,11 @@ FORMS += src/dialogs/ItemDialog.ui
 FORMS += src/dialogs/InstructionsDialog.ui
 
 SOURCES += src/Item.cpp
+SOURCES += src/Instructions.cpp
 SOURCES += src/Controller.cpp
 SOURCES += src/main.cpp
 
-HEADERS += src/Controller.h
 HEADERS += src/Item.h
-
+HEADERS += src/Instructions.h
+HEADERS += src/Controller.h
 
