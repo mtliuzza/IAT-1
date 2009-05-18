@@ -1,6 +1,6 @@
 #include <QtCore>
 
-#define WORDS_PER_ROUND 5
+#define WORDS_PER_ROUND 20
 #define WORDS_TO_SKIP 2
 
 class Item;
