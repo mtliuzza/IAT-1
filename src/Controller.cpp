@@ -10,6 +10,7 @@ Controller::Controller() {
   this->wrongOverall = 0;
   this->round = 0;
   sranddev();
+  this->versionA = rand() % 2;
 }
 
 Controller::~Controller() {
@@ -70,6 +71,13 @@ bool Controller::init() {
     return false;
   }
   this->logStream = new QTextStream( &this->logFile );
+
+  if ( this->versionA ) {
+    *this->logStream << trUtf8( "Wersja A.\n\n" );
+  }
+  else {
+    *this->logStream << trUtf8( "Wersja B.\n\n" );
+  }
 
   return true;
 }
@@ -227,14 +235,26 @@ void Controller::prepareNewRound() {
       instructions.append( this->r1n ).append( "." );
       break;
     case 2:
-      this->l1w = &this->leftCategory1Words;
-      this->l2w = &this->leftCategory2Words;
-      this->r1w = &this->rightCategory1Words;
-      this->r2w = &this->rightCategory2Words;
-      this->l1n = this->leftCategory1Name;
-      this->l2n = this->leftCategory2Name;
-      this->r1n = this->rightCategory1Name;
-      this->r2n = this->rightCategory2Name;
+      if ( this->versionA ) {
+        this->l1w = &this->leftCategory1Words;
+        this->l2w = &this->leftCategory2Words;
+        this->r1w = &this->rightCategory1Words;
+        this->r2w = &this->rightCategory2Words;
+        this->l1n = this->leftCategory1Name;
+        this->l2n = this->leftCategory2Name;
+        this->r1n = this->rightCategory1Name;
+        this->r2n = this->rightCategory2Name;
+      }
+      else {
+        this->l1w = &this->rightCategory1Words;
+        this->l2w = &this->leftCategory2Words;
+        this->r1w = &this->leftCategory1Words;
+        this->r2w = &this->rightCategory2Words;
+        this->l1n = this->rightCategory1Name;
+        this->l2n = this->leftCategory2Name;
+        this->r1n = this->leftCategory1Name;
+        this->r2n = this->rightCategory2Name;
+      }
       instructions = trUtf8(
         "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
         "kategorii "
@@ -266,14 +286,26 @@ void Controller::prepareNewRound() {
       instructions.append( this->r1n ).append( "." );
       break;
     case 4:
-      this->l1w = &this->rightCategory1Words;
-      this->l2w = &this->leftCategory2Words;
-      this->r1w = &this->leftCategory1Words;
-      this->r2w = &this->rightCategory2Words;
-      this->l1n = this->rightCategory1Name;
-      this->l2n = this->leftCategory2Name;
-      this->r1n = this->leftCategory1Name;
-      this->r2n = this->rightCategory2Name;
+      if ( this->versionA ) {
+        this->l1w = &this->rightCategory1Words;
+        this->l2w = &this->leftCategory2Words;
+        this->r1w = &this->leftCategory1Words;
+        this->r2w = &this->rightCategory2Words;
+        this->l1n = this->rightCategory1Name;
+        this->l2n = this->leftCategory2Name;
+        this->r1n = this->leftCategory1Name;
+        this->r2n = this->rightCategory2Name;
+      }
+      else {
+        this->l1w = &this->leftCategory1Words;
+        this->l2w = &this->leftCategory2Words;
+        this->r1w = &this->rightCategory1Words;
+        this->r2w = &this->rightCategory2Words;
+        this->l1n = this->leftCategory1Name;
+        this->l2n = this->leftCategory2Name;
+        this->r1n = this->rightCategory1Name;
+        this->r2n = this->rightCategory2Name;
+      }
       instructions = trUtf8(
         "Naciśnij f, jeżeli wyraz wyświetlony na środku ekranu należy do "
         "kategorii "

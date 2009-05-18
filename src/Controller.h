@@ -39,6 +39,7 @@ class Controller : public QObject {
 
     Item* currentItem;
     Instructions* currentInstructions;
+    bool versionA;
     int round;
     int wordsLeft;
     int wordsLeftToSkip;
