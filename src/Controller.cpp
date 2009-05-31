@@ -87,6 +87,7 @@ bool Controller::init() {
     return false;
   }
   this->logStream = new QTextStream( &this->logFile );
+  this->logStream->setCodec( QTextCodec::codecForName( "UTF-8" ) );
 
   if ( this->versionA ) {
     *this->logStream << trUtf8( "Wersja A.\n\n" );
@@ -109,6 +110,7 @@ bool Controller::readFile(
   QFile file( fileName );
   file.open( QIODevice::ReadOnly | QIODevice::Text );
   QTextStream stream( &file );
+  stream.setCodec( QTextCodec::codecForName( "UTF-8" ) );
 
   QString contents = stream.readAll();
   QStringList lines = contents.split( "\n", QString::SkipEmptyParts );
