@@ -21,7 +21,9 @@ Controller::Controller() {
     this, SLOT( instructionsRead() )
   );
 
-  sranddev();
+  QTime midnight( 0, 0 );
+  srand( midnight.msecsTo( QTime::currentTime() ) );
+
   this->versionA = rand() % 2;
 }
 
